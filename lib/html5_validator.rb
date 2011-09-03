@@ -1,6 +1,9 @@
+require 'rubygems'
+require 'bundler'
+Bundler.require
 require 'json'
 require 'rest_client'
-require 'html5_validator/version'
+require 'rspec'
 require 'html5_validator/rspec'
 
 module Html5Validator

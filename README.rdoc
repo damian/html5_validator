@@ -13,6 +13,8 @@ Ruby gem to test for valid HTML5 markup with RSpec. It also provides an interfac
 == MAIN USAGE:
 
   describe TestController do
+    render_views
+
     it "should be valid html5" do
       get :new
       response.body.should be_valid_html5
