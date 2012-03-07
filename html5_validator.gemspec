@@ -16,8 +16,9 @@ Gem::Specification.new do |s|
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
-  s.add_dependency "json"
-  s.add_dependency "rest-client"
+  s.add_dependency "json", '~> 1.6.5'
+  s.add_dependency "rest-client", '~> 1.6.7'
   s.add_dependency "rspec", "~> 2.6.0"
+  s.add_dependency "nokogiri", "~> 1.5.0"
   s.require_paths = ["lib"]
 end
