@@ -1,6 +1,6 @@
 require 'html5_validator'
 
-describe Html5Validator::Scraper do
+describe Html5Validator::Crawler do
   let(:data) { File.open('spec/fixtures/scraper_html.html').read }
   let(:url) { 'http://damiannicholson.com' }
 
@@ -33,9 +33,10 @@ describe Html5Validator::Scraper do
 
   describe :links do
     let(:data) { File.open('spec/fixtures/sageone_sitemap.html').read }
+    let(:url) { 'http://sageone.com' }
     subject do
       RestClient.stub(:get).and_return(data)
-      described_class.new('http://localhost')
+      described_class.new(url)
     end
 
     it "should return an array" do
@@ -43,11 +44,24 @@ describe Html5Validator::Scraper do
     end
 
     it "should not retrieve any external links" do
-      subject.links.should_not include 'http://google.com'
+      subject.links.should_not include 'http://twitter.com/sageuk'
+      subject.links.should_not include 'http://www.sage.com/'
     end
 
-    it "should remove any non nil elements from links" do
-      subject.links.should_not include nil
+    it "should ensure that no links have any trailing slashes" do
+      subject.links.select { |link| link[link.length - 1] == '/' }.should be_empty
+    end
+
+    it "should ensure no links are empty" do
+      subject.links.select { |link| link.empty? }.should be_empty
+    end
+
+    it "should have 298 internal links" do
+      subject.should have(298).links
+    end
+
+    it "should ensure each link is an absolute path and starts with http://sageone.com" do
+      subject.links.reject { |link| link.start_with? url }.should be_empty
     end
 
   end

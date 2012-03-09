@@ -1,7 +1,8 @@
 require 'html5_validator'
 
 describe Html5Validator::Sitemap do
-  let(:url) { 'http://localhost/sitemap' }
+  # let(:url) { 'http://sageone.com' }
+  let(:url) { 'http://damiannicholson.com' }
   subject { described_class.new(url) }
 
   describe :intialize do
@@ -18,7 +19,10 @@ describe Html5Validator::Sitemap do
     end
 
     it "should populate the sitemap with all the internal links it can find on the passed in website" do
+      puts '--------'
+      puts subject.sitemap.keys
       subject.sitemap.keys.should have(29).items
+      # subject.sitemap.keys.should have(1120).items
     end
   end
 
