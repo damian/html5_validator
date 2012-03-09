@@ -19,21 +19,16 @@ module Html5Validator
     #
     # Returns a Page instance
     def initialize(url = nil)
-      raise ArgumentError if url.nil?
-
-      uri = URI(url)
-      @base_path = [ uri.scheme, '://', uri.host ].join
-      @full_path = [ @base_path, uri.path ].join
-
-      self.url = @full_path
+      self.url = Html5Validator::Url.new(url)
     end
 
-    # Public: Retrieve all the internal links within the page
+    # Public: Retrieve all relative links within the page
     # and ensure they're not nil and unique
     #
     # Examples
+    #
     #   @page.links
-    #   # => [ 'http://google.com', 'http://google.com/calendar' ]
+    #   # => [ '/foo-bar', '/hello-world' ]
     #
     # Returns an Array
     def links
@@ -42,26 +37,25 @@ module Html5Validator
       end.compact.uniq
     end
 
-
     private
 
+    # Internal: Parses the HTML using Nokogiri
+    #
+    # Returns a Nokogiri object
     def doc
       @doc ||= Nokogiri::HTML(body)
     end
 
     # Internal: Ensures that a url doesn't have a trailing slash or is empty
     #
+    # node - A Nokogiri node
+    #
     # Returns a String url
     def format_node_url(node)
-      local_url = @base_path + remove_anchor(node.attributes['href'].to_s)
-      uri = URI(local_url)
-      @base_path + uri.path
+      absolute_url = [url.base_path, node.attributes['href'].to_s].join
+      url = Html5Validator::Url.new(absolute_url)
+      url.full_path
     end
-
-    def remove_anchor(path)
-      path.split('#')[0]
-    end
-
 
   end
 end
