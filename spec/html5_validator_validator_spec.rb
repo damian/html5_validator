@@ -1,96 +1,53 @@
 require 'html5_validator'
 
-describe "Html5Validator" do
-  
-  describe "when using the custom matcher" do
-    it "should not be valid html5 when supplied with invalid content" do
-      @html = File.open('spec/fixtures/invalid_html.html').read
-      @html.should_not be_valid_html5
-    end
+describe Html5Validator::Validator do
 
-    it "should be valid html5 when supplied with valid content" do
-      @html = File.open('spec/fixtures/valid_html.html').read
-      @html.should be_valid_html5
-    end
-  end
+  describe :validate_uri do
+    context "when supplied with a url that contains invalid markup" do
+      class TestInvalidResponse
+        def body
+          File.read('spec/fixtures/response.json')
+        end
+      end
 
-  before do
-    @validator = Html5Validator::Validator.new
-  end
+      subject do
+        RestClient.stub(:get).and_return(TestInvalidResponse.new)
+        described_class.new(:method => :uri, :uri => 'http://google.com')
+      end
 
-  it "should be an instance of Html5Validator::Validator" do
-    @validator.should be_an_instance_of Html5Validator::Validator
-  end
-
-  context "validating a uri" do
-    describe "when supplied with an invalid url" do
-
-      before do
-        @validator.validate_uri('http://google.co.uk')
+      it "should have an array of errors" do
+        subject.errors.should be_an_instance_of Array
       end
 
       it "should not be valid html5" do
-        @validator.valid?.should be_false
+        subject.valid?.should be_false
       end
 
-      it "should return thirty-nine errors" do
-        @validator.errors.should have(39).items
+      it "should have more than 1 error" do
+        subject.should have_at_least(1).errors
       end
     end
 
-    describe "when supplied with a valid url" do
+    context "when supplied with a url that contains valid markup" do
+      class TestValidResponse
+        def body
+          '{"messages":[]}'
+        end
+      end
 
-      before do
-        @validator.validate_uri('http://damiannicholson.com')
+      subject do
+        RestClient.stub(:get).and_return(TestValidResponse.new)
+        described_class.new(:method => :uri, :uri => 'http://google.com')
       end
 
       it "should be valid html5" do
-        @validator.valid?.should be_true
+        subject.valid?.should be_true
       end
 
-      it "should return zero errors" do
-        @validator.errors.should have(0).items
+      it "should have no errors" do
+        subject.should have(0).errors
       end
     end
   end
 
-  context "validating text" do
-    describe "when supplied with invalid html" do
-
-      before do
-        @html = File.open('spec/fixtures/invalid_html.html').read
-        @validator.validate_text(@html)
-      end
-
-      it "should not be valid html5" do
-         @validator.valid?.should be_false
-      end
-
-      it "should return two errors" do
-        @validator.errors.should have(2).items
-      end
-
-      it "should include an error complaining about the lack of a closing section tag" do
-        @validator.inspect.should include('Unclosed element')
-      end
-
-    end
-
-    describe "when supplied with valid html" do
-
-      before do
-        @html = File.open('spec/fixtures/valid_html.html').read
-        @validator.validate_text(@html)
-      end
-
-      it "should be valid html5" do
-         @validator.valid?.should be_true
-      end
-
-      it "should return no errors" do
-        @validator.errors.should have(0).items
-      end
-
-    end
-  end
 end

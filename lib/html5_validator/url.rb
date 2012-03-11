@@ -12,7 +12,7 @@ module Html5Validator
     # Returns a Url instance
     def initialize(url = nil)
       raise ArgumentError unless valid?(url)
-      @uri = URI(url)
+      @uri = URI(url.split('?')[0])
     end
 
     # Public: Returns the base path including the protocol for the
@@ -53,8 +53,8 @@ module Html5Validator
 
     private
 
-    # Internal: Determines if the url is formatted correctly. Coerces
-    # the match in to a Boolean using the double bang trick
+    # Internal: Determines if the url is formatted correctly. Forces
+    # the match in to a Boolean using the double bang
     #
     # url - A String url e.g. 'http://google.com'
     #

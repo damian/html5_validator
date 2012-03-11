@@ -1,3 +1,5 @@
+require 'rspec'
+
 # Assert that the response is valid HTML5
 RSpec::Matchers.define :be_valid_html5 do
   validator = nil
