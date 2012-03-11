@@ -20,6 +20,7 @@ module Html5Validator
     # Returns a Page instance
     def initialize(url = nil)
       self.url = Html5Validator::Url.new(url)
+      self.body = RestClient.get(self.url.full_path)
     end
 
     # Public: Retrieve all relative links within the page
@@ -37,7 +38,19 @@ module Html5Validator
       end.compact.uniq
     end
 
+    def valid?
+      validator.valid?
+    end
+
+    def errors
+      validator.errors
+    end
+
     private
+
+    def validator
+      @validator ||= Html5Validator.validate_text(body)
+    end
 
     # Internal: Parses the HTML using Nokogiri
     #

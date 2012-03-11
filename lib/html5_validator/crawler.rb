@@ -44,27 +44,51 @@ module Html5Validator
       sitemap.values
     end
 
+    # Public: Returns a list of urls with invalid markup
+    #
+    # Examples
+    #
+    #   @crawler.invalid_pages
+    #   # => [ 'http://damiannicholson.com/foo', 'http://damiannicholson.com/bar' ]
+    #
+    # Returns an Array of Strings
+    def invalid_pages
+      invalid_sitemap.keys
+    end
+
+    def valid?
+      invalid_pages.length.zero?
+    end
+
+    def errors
+      hash = {}
+      invalid_sitemap.each do |url, page|
+        hash[url] = page.errors
+      end
+
+      hash
+    end
+
     private
 
-    # Internal: Recursive function to retrieve the contents of a webpage
+    def invalid_sitemap
+      sitemap.reject { |url, page| page.valid? }
+    end
+
+    # Internal: A crude implementation of a crawler using a recursive function to retrieve the contents of a webpage
     #
     # url - A String url e.g. 'http://google.com'
     #
-    # Returns the pages Hash
     def crawl_page(url)
       # Ensure we haven't crawled this page before
-      return unless valid? url
+      return unless valid_url? url
 
-      body = nil
+      page = nil
       begin
-        body = RestClient.get url
+        page = Page.new(url)
       rescue Exception => e
       else
-        return if body.nil?
-
-        # Create a new page instance and assign the response to its body
-        page = Page.new(url)
-        page.body = body
+        return if page.body.empty?
 
         # Add the Page instance to our pages Hash
         self.sitemap[page.url.full_path] = page
@@ -75,7 +99,7 @@ module Html5Validator
         end
       end
 
-      sitemap
+      nil
     end
 
     # Internal: Determines whether we've visited this page before
@@ -102,7 +126,7 @@ module Html5Validator
     # url - A String url
     #
     # Returns a Boolean
-    def valid?(url)
+    def valid_url?(url)
       same_domain?(url) && !visited?(url)
     end
 

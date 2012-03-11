@@ -18,4 +18,8 @@ module Html5Validator
     Validator.new(:method => :uri, :uri => uri)
   end
 
+  def self.validate_website(uri)
+    Crawler.new(uri)
+  end
+
 end
