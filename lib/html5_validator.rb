@@ -8,7 +8,7 @@ require 'html5_validator/rspec'
 
 module Html5Validator
   class Validator
-    BASE_URI = 'http://html5.validator.nu'
+    BASE_URI = 'http://validator.nu'
     HEADERS = { 'Content-Type' => 'text/html; charset=utf-8', 'Content-Encoding' => 'UTF-8' }
     attr_reader :errors
 
