@@ -11,6 +11,7 @@ Ruby gem to test for valid HTML5 markup with RSpec. It also provides an interfac
 * gem install html5_validator
 
 == MAIN USAGE:
+  require 'html5_validator/matchers'
 
   describe TestController do
     render_views
@@ -24,6 +25,7 @@ Ruby gem to test for valid HTML5 markup with RSpec. It also provides an interfac
 If your spec fails it outputs the validation error in your console.
 
 == OTHER USAGE:
+  require 'html5_validator/validator'
 
   @validator = Html5Validator::Validator.new
    
@@ -46,7 +48,7 @@ See more examples in the spec folder.
 
 (The MIT License)
 
-Copyright (c) 2011 Damian Nicholson
+Copyright (c) 2013 Damian Nicholson
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
