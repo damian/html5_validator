@@ -1,20 +1,16 @@
 require 'html5_validator/matchers'
-require 'spec_helper'
 
 describe Html5Validator::Validator do
-  it "should be an instance of Html5Validator::Validator" do
-    subject.should be_an_instance_of Html5Validator::Validator
-  end
+  let(:invalid_html) { File.open('spec/fixtures/invalid_html.html').read }
+  let(:valid_html) { File.open('spec/fixtures/valid_html.html').read }
 
   describe "when using the custom matcher" do
     it "should not be valid html5 when supplied with invalid content" do
-      @html = File.open('spec/fixtures/invalid_html.html').read
-      @html.should_not be_valid_html5
+      expect(invalid_html).not_to be_valid_html5
     end
 
     it "should be valid html5 when supplied with valid content" do
-      @html = File.open('spec/fixtures/valid_html.html').read
-      @html.should be_valid_html5
+      expect(valid_html).to be_valid_html5
     end
   end
 
@@ -25,11 +21,11 @@ describe Html5Validator::Validator do
       end
 
       it "should not be valid html5" do
-        subject.valid?.should be_false
+        expect(subject.valid?).to be false
       end
 
       it "should return at least 1 error" do
-        subject.should have_at_least(1).errors
+        expect(subject).to have_at_least(1).errors
       end
     end
 
@@ -39,11 +35,11 @@ describe Html5Validator::Validator do
       end
 
       it "should be valid html5" do
-        subject.valid?.should be_true
+        expect(subject.valid?).to be true
       end
 
       it "should return zero errors" do
-        subject.errors.should have(0).items
+        expect(subject).to have(0).errors
       end
     end
   end
@@ -51,35 +47,33 @@ describe Html5Validator::Validator do
   context "validating text" do
     describe "when supplied with invalid html" do
       before do
-        @html = File.open('spec/fixtures/invalid_html.html').read
-        subject.validate_text(@html)
+        subject.validate_text(invalid_html)
       end
 
       it "should not be valid html5" do
-         subject.valid?.should be_false
+         expect(subject.valid?).to be false
       end
 
       it "should return two errors" do
-        subject.errors.should have(2).items
+        expect(subject).to have(2).errors
       end
 
       it "should include an error complaining about the lack of a closing section tag" do
-        subject.inspect.should include('Unclosed element')
+        expect(subject.inspect).to include('Unclosed element')
       end
     end
 
     describe "when supplied with valid html" do
       before do
-        @html = File.open('spec/fixtures/valid_html.html').read
-        subject.validate_text(@html)
+        subject.validate_text(valid_html)
       end
 
       it "should be valid html5" do
-         subject.valid?.should be_true
+         expect(subject.valid?).to be true
       end
 
       it "should return no errors" do
-        subject.errors.should have(0).items
+        expect(subject).to have(0).errors
       end
     end
   end

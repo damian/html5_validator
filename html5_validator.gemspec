@@ -19,5 +19,6 @@ Gem::Specification.new do |s|
   s.add_dependency "json"
   s.add_dependency "rest-client"
   s.add_dependency "rspec"
+  s.add_dependency "rspec-collection_matchers", "~> 1.0.x"
   s.require_paths = ["lib"]
 end
